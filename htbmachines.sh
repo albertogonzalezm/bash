@@ -58,32 +58,32 @@ function searchMachinesByDifficulty()
     exit 1
   fi
   echo -e "\n${purpleColour}$(echo ${1^})${endColour} difficulty level machines:\n"
-  cat /opt/htbmachines/bundle.js | grep -B 5 "dificultad: \"$difficulty\"" | grep "name:" | tr -d '"' | tr -d ',' | awk 'NF{print $NF}' | column
+  cat ./bundle.js | grep -B 5 "dificultad: \"$difficulty\"" | grep "name:" | tr -d '"' | tr -d ',' | awk 'NF{print $NF}' | column
   echo -e "\n"
 }
 
 function updateFiles()
 {
-  if [ ! -f /opt/htbmachines/bundle.js ]; then
+  if [ ! -f ./bundle.js ]; then
     echo -e "\n${blueColour}󰭽 ${endColour} Downloading files...\n" 
-    curl -s $main_url > /opt/htbmachines/bundle.js
-    js-beautify /opt/htbmachines/bundle.js | sponge /opt/htbmachines/bundle.js
+    curl -s $main_url > ./bundle.js
+    js-beautify ./bundle.js | sponge ./bundle.js
     echo -e "${greenColour}󱋌 ${endColour} Download finished.\n"
   else 
     echo -e "\n${purpleColour}󰢪 ${endColour} Checking updates..." 
-    curl -s $main_url > /opt/htbmachines/tmp_bundle.js
-    js-beautify /opt/htbmachines/tmp_bundle.js | sponge /opt/htbmachines/tmp_bundle.js
+    curl -s $main_url > ./tmp_bundle.js
+    js-beautify ./tmp_bundle.js | sponge ./tmp_bundle.js
 
-    bundle="$(md5sum /opt/htbmachines/bundle.js | awk '{print $1}')"
-    tmp_bundle="$(md5sum /opt/htbmachines/tmp_bundle.js | awk '{print $1}')" 
+    bundle="$(md5sum ./bundle.js | awk '{print $1}')"
+    tmp_bundle="$(md5sum ./tmp_bundle.js | awk '{print $1}')" 
 
     if [[ "$bundle" != "$tmp_bundle" ]]; then
-      rm /opt/htbmachines/bundle.js && mv /opt/htbmachines/tmp_bundle.js /opt/htbmachines/bundle.js
+      rm ./bundle.js && mv ./tmp_bundle.js ./bundle.js
       echo -e "\n${greenColour}󰄴 ${endColour} The files have been upgraded.\n"
     else
       echo -e "\n${greenColour}󰄴 ${endColour} There are no updates available.\n"
-      if [ -f /opt/htbmachines/tmp_bundle.js ]; then
-        rm /opt/htbmachines/tmp_bundle.js 
+      if [ -f ./tmp_bundle.js ]; then
+        rm ./tmp_bundle.js 
       fi
     fi
   fi
